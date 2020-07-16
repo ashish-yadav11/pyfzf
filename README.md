@@ -13,7 +13,7 @@ A small fzf frontend for pacman and yay written in bash.
 The program contains options to -
 
 * Interactively choose packages in official repo to install.
-* Uninstall (recently) installed official or AUR packages.
+* Uninstall (recently) installed official or AUR packages the same way.
 * Clear uninstalled packages from cache (requires paccache).
 * Remove unneeded dependencies.
 * Show news from Archlinux homepage.
