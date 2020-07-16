@@ -13,7 +13,6 @@ A small fzf frontend for pacman and yay written in bash.
 The program contains options to -
 
 * Interactively choose packages in official repo to install.
-* Upgrade.
 * Uninstall (recently) installed official or AUR packages.
 * Clear uninstalled packages from cache (requires paccache).
 * Remove unneeded dependencies.
