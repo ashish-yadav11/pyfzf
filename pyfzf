@@ -1,0 +1,156 @@
+#!/bin/bash
+# menus
+ins="Install package(s) from official repo"
+upg="Upgrade system"
+rmr="Remove recently installed package(s)"
+rmro="Remove recently installed off package(s)"
+rmra="Remove recently installed aur package(s)"
+rms="Remove installed package(s)"
+rmso="Remove installed off package(s)"
+rmsa="Remove installed aur package(s)"
+clr="Clear uninstalled packages from cache"
+rmud="Remove unneeded dependencies (orphans)"
+nws="Show news from Archlinux homepage"
+sh="Start shell"
+
+# fzf commands for "to be installed" and "to be removed" packages respectively
+fzfi() {
+    fzf --layout=reverse --multi --preview='pacman --color always -Si {1}' --preview-window=right:60%:wrap
+}
+fzfr() {
+    fzf --layout=reverse --multi --preview='pacman --color always -Qi {1}' --preview-window=right:60%:wrap
+}
+
+# grep extended regexp of packages to ignore when listing explicitly installed packages to remove
+pacstoign="(^base$)|(^efibootmgr$)|(^grub$)|(^linux$)|(^linux-firmware$)|(^linux-lts$)"
+
+# menus to show
+arg="$ins\n$upg\n$rmr\n$rmro\n$rmra\n$rms\n$rmso\n$rmsa\n$clr\n$rmud\n$nws\n$sh"
+
+cont=1
+while (( cont )) ; do
+    cont=0
+    clear
+    sel=$(echo -e "$arg" | fzf --layout=reverse)
+    case "$sel" in
+        "$ins")
+            cont=1
+            mapfile -t pacstoins < <(pacman -Slq | fzfi)
+            if [[ ${#pacstoins[@]} -gt 0 ]] ; then
+                trap : INT
+                yay -S "${pacstoins[@]}"
+                trap - INT
+                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            fi
+            ;;
+        "$upg")
+            cont=1
+            trap : INT
+            yay -Syu
+            trap - INT
+            echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            ;;
+        "$rmr")
+            cont=1
+            mapfile -t pacstorem < <(\
+                tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
+                 awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
+                  grep -Fxf <(pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
+                   grep -Ev "$pacstoign") | fzfr)
+            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                trap : INT
+                yay -Rns "${pacstorem[@]}"
+                trap - INT
+                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            fi
+            ;;
+        "$rmro")
+            cont=1
+            mapfile -t pacstorem < <(\
+                tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
+                 awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
+                  grep -Fxf <(pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
+                   grep -Ev "$pacstoign") | fzfr)
+            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                trap : INT
+                yay -Rns "${pacstorem[@]}"
+                trap - INT
+                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            fi
+            ;;
+        "$rmra")
+            cont=1
+            mapfile -t pacstorem < <(\
+                tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
+                 awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
+                  grep -Fxf <(pacman -Qqem) | fzfr)
+            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                trap : INT
+                yay -Rns "${pacstorem[@]}"
+                trap - INT
+                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            fi
+            ;;
+        "$rms")
+            cont=1
+            mapfile -t pacstorem < <(\
+                pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
+                 grep -Ev "$pacstoign" | fzfr)
+            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                trap : INT
+                yay -Rns "${pacstorem[@]}"
+                trap - INT
+                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            fi
+            ;;
+        "$rmso")
+            cont=1
+            mapfile -t pacstorem < <(\
+                pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
+                 grep -Ev "pacstoign" | fzfr)
+            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                trap : INT
+                yay -Rns "${pacstorem[@]}"
+                trap - INT
+                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            fi
+            ;;
+        "$rmsa")
+            cont=1
+            mapfile -t pacstorem < <(pacman -Qqem | fzfr)
+            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                trap : INT
+                yay -Rns "${pacstorem[@]}"
+                trap - INT
+                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            fi
+            ;;
+        "$clr")
+            cont=1
+            trap : INT
+            paccache --remove --uninstalled --keep 0
+            trap - INT
+            echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            ;;
+        "$rmud")
+            cont=1
+            mapfile orpstorem < <(pacman -Qdtq)
+            if [[ ${#orpstorem[@]} -gt 0 ]] ; then
+                trap : INT
+                yay -Rns "${orpstorem[@]}"
+                trap - INT
+            else
+                echo -e "\e[1;32m==> \e[1;37mNo unneeded dependencies (orphans) found for removing\e[0m\n"
+            fi
+                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            ;;
+        "$nws")
+            cont=1
+            yay -Pw | less -R
+            ;;
+        "$sh")
+            cont=1
+            ${SHELL:-bash}
+            ;;
+    esac
+done
