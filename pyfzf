@@ -30,17 +30,18 @@ arg="$ins\n$upg\n$rmr\n$rmro\n$rmra\n$rms\n$rmso\n$rmsa\n$clr\n$rmud\n$nws\n$sh"
 cont=1
 while (( cont )) ; do
     cont=0
-    clear
     sel=$(echo -e "$arg" | fzf --layout=reverse)
     case "$sel" in
         "$ins")
             cont=1
             mapfile -t pacstoins < <(pacman -Slq | fzfi)
             if [[ ${#pacstoins[@]} -gt 0 ]] ; then
+                clear
                 trap : INT
                 yay -S "${pacstoins[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                clear
             fi
             ;;
         "$upg")
@@ -49,6 +50,7 @@ while (( cont )) ; do
             yay -Syu
             trap - INT
             echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            clear
             ;;
         "$rmr")
             cont=1
@@ -58,10 +60,12 @@ while (( cont )) ; do
                   grep -Fxf <(pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
                    grep -Ev "$pacstoign") | fzfr)
             if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                clear
             fi
             ;;
         "$rmro")
@@ -72,10 +76,12 @@ while (( cont )) ; do
                   grep -Fxf <(pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
                    grep -Ev "$pacstoign") | fzfr)
             if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                clear
             fi
             ;;
         "$rmra")
@@ -85,10 +91,12 @@ while (( cont )) ; do
                  awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
                   grep -Fxf <(pacman -Qqem) | fzfr)
             if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                clear
             fi
             ;;
         "$rms")
@@ -97,10 +105,12 @@ while (( cont )) ; do
                 pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
                  grep -Ev "$pacstoign" | fzfr)
             if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                clear
             fi
             ;;
         "$rmso")
@@ -109,20 +119,24 @@ while (( cont )) ; do
                 pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
                  grep -Ev "pacstoign" | fzfr)
             if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                clear
             fi
             ;;
         "$rmsa")
             cont=1
             mapfile -t pacstorem < <(pacman -Qqem | fzfr)
             if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+                clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                clear
             fi
             ;;
         "$clr")
@@ -131,6 +145,7 @@ while (( cont )) ; do
             paccache --remove --uninstalled --keep 0
             trap - INT
             echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            clear
             ;;
         "$rmud")
             cont=1
@@ -142,7 +157,8 @@ while (( cont )) ; do
             else
                 echo -e "\e[1;32m==> \e[1;37mNo unneeded dependencies (orphans) found for removing\e[0m\n"
             fi
-                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            clear
             ;;
         "$nws")
             cont=1
@@ -151,6 +167,8 @@ while (( cont )) ; do
         "$sh")
             cont=1
             ${SHELL:-bash}
+            clear
             ;;
     esac
 done
+clear
