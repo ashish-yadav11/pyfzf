@@ -27,13 +27,11 @@ pacstoign="(^base$)|(^efibootmgr$)|(^grub$)|(^linux$)|(^linux-firmware$)|(^linux
 # menus to show
 arg="$ins\n$upg\n$rmr\n$rmro\n$rmra\n$rms\n$rmso\n$rmsa\n$clr\n$rmud\n$nws\n$sh"
 
-cont=1
-while (( cont )) ; do
-    cont=0
+while true ; do
+    clear
     sel=$(echo -e "$arg" | fzf --layout=reverse)
     case "$sel" in
         "$ins")
-            cont=1
             mapfile -t pacstoins < <(pacman -Slq | fzfi)
             if [[ ${#pacstoins[@]} -gt 0 ]] ; then
                 clear
@@ -41,19 +39,15 @@ while (( cont )) ; do
                 yay -S "${pacstoins[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
-                clear
             fi
             ;;
         "$upg")
-            cont=1
             trap : INT
             yay -Syu
             trap - INT
             echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
-            clear
             ;;
         "$rmr")
-            cont=1
             mapfile -t pacstorem < <(\
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
@@ -65,11 +59,9 @@ while (( cont )) ; do
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
-                clear
             fi
             ;;
         "$rmro")
-            cont=1
             mapfile -t pacstorem < <(\
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
@@ -81,11 +73,9 @@ while (( cont )) ; do
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
-                clear
             fi
             ;;
         "$rmra")
-            cont=1
             mapfile -t pacstorem < <(\
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
@@ -96,11 +86,9 @@ while (( cont )) ; do
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
-                clear
             fi
             ;;
         "$rms")
-            cont=1
             mapfile -t pacstorem < <(\
                 pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
                  grep -Ev "$pacstoign" | fzfr)
@@ -110,11 +98,9 @@ while (( cont )) ; do
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
-                clear
             fi
             ;;
         "$rmso")
-            cont=1
             mapfile -t pacstorem < <(\
                 pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
                  grep -Ev "pacstoign" | fzfr)
@@ -124,11 +110,9 @@ while (( cont )) ; do
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
-                clear
             fi
             ;;
         "$rmsa")
-            cont=1
             mapfile -t pacstorem < <(pacman -Qqem | fzfr)
             if [[ ${#pacstorem[@]} -gt 0 ]] ; then
                 clear
@@ -136,19 +120,15 @@ while (( cont )) ; do
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
-                clear
             fi
             ;;
         "$clr")
-            cont=1
             trap : INT
             paccache --remove --uninstalled --keep 0
             trap - INT
             echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
-            clear
             ;;
         "$rmud")
-            cont=1
             mapfile -t orpstorem < <(pacman -Qdtq)
             if [[ ${#orpstorem[@]} -gt 0 ]] ; then
                 trap : INT
@@ -158,16 +138,15 @@ while (( cont )) ; do
                 echo -e "\e[1;32m==> \e[1;37mNo unneeded dependencies (orphans) found for removing\e[0m\n"
             fi
             echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
-            clear
             ;;
         "$nws")
-            cont=1
             yay -Pw | less -R
             ;;
         "$sh")
-            cont=1
             ${SHELL:-bash}
-            clear
+            ;;
+        *)
+            break
             ;;
     esac
 done
