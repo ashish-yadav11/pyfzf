@@ -149,7 +149,7 @@ while (( cont )) ; do
             ;;
         "$rmud")
             cont=1
-            mapfile orpstorem < <(pacman -Qdtq)
+            mapfile -t orpstorem < <(pacman -Qdtq)
             if [[ ${#orpstorem[@]} -gt 0 ]] ; then
                 trap : INT
                 yay -Rns "${orpstorem[@]}"
