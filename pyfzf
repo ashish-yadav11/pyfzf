@@ -33,7 +33,7 @@ while true ; do
     case "$sel" in
         "$ins")
             mapfile -t pacstoins < <(pacman -Slq | fzfi)
-            if [[ ${#pacstoins[@]} -gt 0 ]] ; then
+            if (( ${#pacstoins[@]} > 0 )) ; then
                 clear
                 trap : INT
                 yay -S "${pacstoins[@]}"
@@ -53,7 +53,7 @@ while true ; do
                  awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
                   grep -Fxf <(pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
                    grep -Ev "$pacstoign") | fzfr)
-            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+            if (( ${#pacstorem[@]} > 0 )) ; then
                 clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
@@ -67,7 +67,7 @@ while true ; do
                  awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
                   grep -Fxf <(pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
                    grep -Ev "$pacstoign") | fzfr)
-            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+            if (( ${#pacstorem[@]} > 0 )) ; then
                 clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
@@ -80,7 +80,7 @@ while true ; do
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
                   grep -Fxf <(pacman -Qqem) | fzfr)
-            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+            if (( ${#pacstorem[@]} > 0 )) ; then
                 clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
@@ -92,7 +92,7 @@ while true ; do
             mapfile -t pacstorem < <(\
                 pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
                  grep -Ev "$pacstoign" | fzfr)
-            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+            if (( ${#pacstorem[@]} > 0 )) ; then
                 clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
@@ -104,7 +104,7 @@ while true ; do
             mapfile -t pacstorem < <(\
                 pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
                  grep -Ev "pacstoign" | fzfr)
-            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+            if (( ${#pacstorem[@]} > 0 )) ; then
                 clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
@@ -114,7 +114,7 @@ while true ; do
             ;;
         "$rmsa")
             mapfile -t pacstorem < <(pacman -Qqem | fzfr)
-            if [[ ${#pacstorem[@]} -gt 0 ]] ; then
+            if (( ${#pacstorem[@]} > 0 )) ; then
                 clear
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
@@ -130,7 +130,7 @@ while true ; do
             ;;
         "$rmud")
             mapfile -t orpstorem < <(pacman -Qdtq)
-            if [[ ${#orpstorem[@]} -gt 0 ]] ; then
+            if (( ${#orpstorem[@]} > 0 )) ; then
                 trap : INT
                 yay -Rns "${orpstorem[@]}"
                 trap - INT
