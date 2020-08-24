@@ -6,7 +6,7 @@ A small fzf frontend for pacman and yay written in bash.
 
 * [fzf](https://github.com/junegunn/fzf)
 * [yay](https://github.com/Jguer/yay)
-* pacman-contrib (optional, for paccache)
+* pacman-contrib (optional, for paccache and pacdiff)
 
 # Features
 

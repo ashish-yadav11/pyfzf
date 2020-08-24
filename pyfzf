@@ -8,6 +8,7 @@ rmra="Remove recently installed aur package(s)"
 rms="Remove installed package(s)"
 rmso="Remove installed off package(s)"
 rmsa="Remove installed aur package(s)"
+pdif="Resolve pacnew and pacsave files"
 clr="Clear uninstalled packages from cache"
 rmud="Remove unneeded dependencies (orphans)"
 nws="Show news from Archlinux homepage"
@@ -25,7 +26,7 @@ fzfr() {
 pacstoign="(^base$)|(^efibootmgr$)|(^grub$)|(^linux$)|(^linux-firmware$)|(^linux-lts$)"
 
 # menus to show
-arg="$ins\n$upg\n$rmr\n$rmro\n$rmra\n$rms\n$rmso\n$rmsa\n$clr\n$rmud\n$nws\n$sh"
+arg="$ins\n$upg\n$rmr\n$rmro\n$rmra\n$rms\n$rmso\n$rmsa\n$pdif\n$clr\n$rmud\n$nws\n$sh"
 
 while true ; do
     clear
@@ -122,6 +123,11 @@ while true ; do
                 echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
             fi
             ;;
+        "$pdif")
+            trap : INT
+            sudo pacdiff
+            trap - INT
+            ;;
         "$clr")
             trap : INT
             paccache --remove --uninstalled --keep 0
@@ -135,7 +141,7 @@ while true ; do
                 yay -Rns "${orpstorem[@]}"
                 trap - INT
             else
-                echo -e "\e[1;32m==> \e[1;37mNo unneeded dependencies (orphans) found for removing\e[0m\n"
+                echo -e "\e[1;32m==> \e[1;37mNo unneeded dependencies (orphans) found for removing\e[0m"
             fi
             echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
             ;;
