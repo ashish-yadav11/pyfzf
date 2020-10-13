@@ -49,7 +49,7 @@ while true ; do
             echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
             ;;
         "$rmr")
-            mapfile -t pacstorem < <(\
+            mapfile -t pacstorem < <(
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
                   grep -Fxf <(pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
@@ -63,7 +63,7 @@ while true ; do
             fi
             ;;
         "$rmro")
-            mapfile -t pacstorem < <(\
+            mapfile -t pacstorem < <(
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
                   grep -Fxf <(pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
@@ -77,7 +77,7 @@ while true ; do
             fi
             ;;
         "$rmra")
-            mapfile -t pacstorem < <(\
+            mapfile -t pacstorem < <(
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
                   grep -Fxf <(pacman -Qqem) | fzfr)
@@ -90,7 +90,7 @@ while true ; do
             fi
             ;;
         "$rms")
-            mapfile -t pacstorem < <(\
+            mapfile -t pacstorem < <(
                 pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
                  grep -Ev "$pacstoign" | fzfr)
             if (( ${#pacstorem[@]} )) ; then
@@ -102,7 +102,7 @@ while true ; do
             fi
             ;;
         "$rmso")
-            mapfile -t pacstorem < <(\
+            mapfile -t pacstorem < <(
                 pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
                  grep -Ev "pacstoign" | fzfr)
             if (( ${#pacstorem[@]} )) ; then
