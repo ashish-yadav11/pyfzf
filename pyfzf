@@ -30,8 +30,7 @@ arg="$ins\n$upg\n$rmr\n$rmro\n$rmra\n$rms\n$rmso\n$rmsa\n$pdif\n$clr\n$rmud\n$nw
 
 while true ; do
     clear
-    sel=$(echo -e "$arg" | fzf --layout=reverse)
-    case "$sel" in
+    case $(echo -e "$arg" | fzf --layout=reverse) in
         "$ins")
             mapfile -t pacstoins < <(pacman -Slq | fzfi)
             if (( ${#pacstoins[@]} )) ; then
