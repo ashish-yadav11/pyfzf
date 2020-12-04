@@ -50,7 +50,7 @@ while true ; do
         "$rmr")
             mapfile -t pacstorem < <(
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
-                 awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
+                 awk '!x[$4] {x[$4]=1; print $4}' |
                   grep -Fxf <(pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
                    grep -Ev "$pacstoign") | fzfr)
             if (( ${#pacstorem[@]} )) ; then
@@ -64,7 +64,7 @@ while true ; do
         "$rmro")
             mapfile -t pacstorem < <(
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
-                 awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
+                 awk '!x[$4] {x[$4]=1; print $4}' |
                   grep -Fxf <(pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
                    grep -Ev "$pacstoign") | fzfr)
             if (( ${#pacstorem[@]} )) ; then
@@ -78,7 +78,7 @@ while true ; do
         "$rmra")
             mapfile -t pacstorem < <(
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
-                 awk '{if (!x[$4]) {x[$4]=1; print $4}}' |
+                 awk '!x[$4] {x[$4]=1; print $4}' |
                   grep -Fxf <(pacman -Qqem) | fzfr)
             if (( ${#pacstorem[@]} )) ; then
                 clear
