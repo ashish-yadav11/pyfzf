@@ -1,5 +1,5 @@
 #!/bin/bash
-# menus
+# menu items
 ins="Install package(s) from official repo"
 upg="Upgrade system"
 rmr="Remove recently installed package(s)"
@@ -25,7 +25,7 @@ fzfr() {
 # grep extended regexp of packages to ignore when listing explicitly installed packages to remove
 pacstoign="(^base$)|(^efibootmgr$)|(^grub$)|(^linux$)|(^linux-firmware$)|(^linux-lts$)"
 
-# menus to show
+# menu items to show
 arg="$ins\n$upg\n$rmr\n$rmro\n$rmra\n$rms\n$rmso\n$rmsa\n$pdif\n$clr\n$rmud\n$nws\n$sh"
 
 while true ; do
