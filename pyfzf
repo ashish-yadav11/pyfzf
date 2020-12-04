@@ -14,7 +14,7 @@ rmud="Remove unneeded dependencies (orphans)"
 nws="Show news from Archlinux homepage"
 sh="Start shell"
 
-# fzf commands for "to be installed" and "to be removed" packages respectively
+# fzf commands for listing "to be installed" and "to be removed" packages respectively
 fzfi() {
     fzf --layout=reverse --multi --preview='pacman --color always -Si {1}' --preview-window=right:60%:wrap
 }
@@ -28,6 +28,10 @@ pacstoign="(^base$)|(^efibootmgr$)|(^grub$)|(^linux$)|(^linux-firmware$)|(^linux
 # menu items to show
 arg="$ins\n$upg\n$rmr\n$rmro\n$rmra\n$rms\n$rmso\n$rmsa\n$pdif\n$clr\n$rmud\n$nws\n$sh"
 
+keyprompt() {
+    read -s -n1 -p $'\n Press any key to continue or ^C to exit...'
+}
+
 while true ; do
     clear
     case $(echo -e "$arg" | fzf --layout=reverse) in
@@ -38,14 +42,14 @@ while true ; do
                 trap : INT
                 yay -S "${pacstoins[@]}"
                 trap - INT
-                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                keyprompt
             fi
             ;;
         "$upg")
             trap : INT
             yay -Syu
             trap - INT
-            echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            keyprompt
             ;;
         "$rmr")
             mapfile -t pacstorem < <(
@@ -58,7 +62,7 @@ while true ; do
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
-                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                keyprompt
             fi
             ;;
         "$rmro")
@@ -72,7 +76,7 @@ while true ; do
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
-                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                keyprompt
             fi
             ;;
         "$rmra")
@@ -85,7 +89,7 @@ while true ; do
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
-                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                keyprompt
             fi
             ;;
         "$rms")
@@ -97,7 +101,7 @@ while true ; do
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
-                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                keyprompt
             fi
             ;;
         "$rmso")
@@ -109,7 +113,7 @@ while true ; do
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
-                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                keyprompt
             fi
             ;;
         "$rmsa")
@@ -119,7 +123,7 @@ while true ; do
                 trap : INT
                 yay -Rns "${pacstorem[@]}"
                 trap - INT
-                echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+                keyprompt
             fi
             ;;
         "$pdif")
@@ -131,7 +135,7 @@ while true ; do
             trap : INT
             paccache --remove --uninstalled --keep 0
             trap - INT
-            echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            keyprompt
             ;;
         "$rmud")
             mapfile -t orpstorem < <(pacman -Qdtq)
@@ -142,7 +146,7 @@ while true ; do
             else
                 echo -e "\e[1;32m==> \e[1;37mNo unneeded dependencies (orphans) found for removing\e[0m"
             fi
-            echo -en "\n Press any key to continue or ^C to exit..." && read -n 1 -s
+            keyprompt
             ;;
         "$nws")
             yay -Pw | less -R
