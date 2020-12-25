@@ -133,7 +133,7 @@ while true ; do
             ;;
         "$clr")
             trap : INT
-            paccache --remove --uninstalled --keep 0
+            paccache -ruk0
             trap - INT
             keyprompt
             ;;
