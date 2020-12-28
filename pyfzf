@@ -23,7 +23,7 @@ fzfr() {
 }
 
 # grep extended regexp of packages to ignore when listing explicitly installed packages to remove
-pacstoign="(^base$)|(^efibootmgr$)|(^grub$)|(^linux$)|(^linux-firmware$)|(^linux-lts$)"
+pacstoign="^(base|efibootmgr|grub|linux|linux-firmware|linux-lts)$"
 
 # menu items to show
 arg="$ins\n$upg\n$rmr\n$rmro\n$rmra\n$rms\n$rmso\n$rmsa\n$pdif\n$clr\n$rmud\n$nws\n$sh"
