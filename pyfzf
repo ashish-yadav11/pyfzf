@@ -1,5 +1,6 @@
 #!/bin/bash
-# menu items
+
+# title of menu items
 ins="Install package(s) from official repo"
 upg="Upgrade system"
 rmr="Remove recently installed package(s)"
@@ -18,15 +19,24 @@ sh="Start shell"
 fzfi() {
     fzf --layout=reverse --multi --preview='pacman --color always -Si {1}' --preview-window=right:60%:wrap
 }
+
 fzfr() {
     fzf --layout=reverse --multi --preview='pacman --color always -Qi {1}' --preview-window=right:60%:wrap
 }
 
-# grep extended regexp of packages to ignore when listing explicitly installed packages to remove
-pacstoign="^(base|efibootmgr|grub|linux|linux-firmware|linux-lts)$"
+# grep extended regexp of packages to ignore when listing installed packages to remove
+pacstoign="^(base|efibootmgr|grub|linux|linux-firmware|linux-lts|man-db|man-pages)$"
+
+# list of package groups to ignore while listing installed packages to remove
+grpstoign=(base-devel)
 
 # menu items to show
-arg="$ins\n$upg\n$rmr\n$rmro\n$rmra\n$rms\n$rmso\n$rmsa\n$pdif\n$clr\n$rmud\n$nws\n$sh"
+menu="$ins\n$upg\n$rmr\n$rmro\n$rmra\n$rms\n$rmso\n$rmsa\n$pdif\n$clr\n$rmud\n$nws\n$sh"
+
+
+filter () {
+    grep -Fxvf <(pacman -Qqg "${grpstoign[@]}") | grep -Ev "$pacstoign"
+}
 
 keyprompt() {
     read -s -n1 -p $'\n Press any key to continue or ^C to exit...'
@@ -34,7 +44,7 @@ keyprompt() {
 
 while true ; do
     clear
-    case $(echo -e "$arg" | fzf --layout=reverse) in
+    case $(echo -e "$menu" | fzf --layout=reverse) in
         "$ins")
             mapfile -t pacstoins < <(pacman -Slq | fzfi)
             if (( ${#pacstoins[@]} )) ; then
@@ -55,8 +65,8 @@ while true ; do
             mapfile -t pacstorem < <(
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '!x[$4] {x[$4]=1; print $4}' |
-                  grep -Fxf <(pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
-                   grep -Ev "$pacstoign") | fzfr)
+                  grep -Fxf <(pacman -Qqe | filter) |
+                   fzfr)
             if (( ${#pacstorem[@]} )) ; then
                 clear
                 trap : INT
@@ -69,8 +79,8 @@ while true ; do
             mapfile -t pacstorem < <(
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '!x[$4] {x[$4]=1; print $4}' |
-                  grep -Fxf <(pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
-                   grep -Ev "$pacstoign") | fzfr)
+                  grep -Fxf <(pacman -Qqen | filter) |
+                   fzfr)
             if (( ${#pacstorem[@]} )) ; then
                 clear
                 trap : INT
@@ -83,7 +93,8 @@ while true ; do
             mapfile -t pacstorem < <(
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '!x[$4] {x[$4]=1; print $4}' |
-                  grep -Fxf <(pacman -Qqem) | fzfr)
+                  grep -Fxf <(pacman -Qqem) |
+                   fzfr)
             if (( ${#pacstorem[@]} )) ; then
                 clear
                 trap : INT
@@ -93,9 +104,7 @@ while true ; do
             fi
             ;;
         "$rms")
-            mapfile -t pacstorem < <(
-                pacman -Qqe | grep -Fxvf <(pacman -Qqg base-devel) |
-                 grep -Ev "$pacstoign" | fzfr)
+            mapfile -t pacstorem < <(pacman -Qqe | filter | fzfr)
             if (( ${#pacstorem[@]} )) ; then
                 clear
                 trap : INT
@@ -105,9 +114,7 @@ while true ; do
             fi
             ;;
         "$rmso")
-            mapfile -t pacstorem < <(
-                pacman -Qqen | grep -Fxvf <(pacman -Qqg base-devel) |
-                 grep -Ev "pacstoign" | fzfr)
+            mapfile -t pacstorem < <(pacman -Qqen | filter | fzfr)
             if (( ${#pacstorem[@]} )) ; then
                 clear
                 trap : INT
