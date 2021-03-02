@@ -159,7 +159,7 @@ while true ; do
             yay -Pw | less -R
             ;;
         "$sh")
-            ${SHELL:-bash}
+            "$SHELL"
             ;;
         *)
             break
