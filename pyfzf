@@ -44,7 +44,7 @@ keyprompt() {
 
 while true ; do
     clear
-    case $(echo -e "$menu" | fzf --layout=reverse) in
+    case "$(echo -e "$menu" | fzf --layout=reverse)" in
         "$ins")
             mapfile -t pacstoins < <(pacman -Slq | fzfi)
             if (( ${#pacstoins[@]} )) ; then
