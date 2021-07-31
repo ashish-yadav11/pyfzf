@@ -17,24 +17,21 @@ rmud="Remove unneeded dependencies (orphans)"
 sh="Start shell"
 upg="Upgrade system"
 
-# global fzf options
-fzfg() {
-    SHELL=bash fzf --no-mouse --layout=reverse --bind=ctrl-a:ignore,ctrl-e:down,ctrl-y:up "$@"
-}
-
 # fzf command for "to be installed" packages
 fzfip() {
-    fzfg --multi --preview-window=right:60%:wrap --preview='pacman --color always -Si {}'
+    SHELL=sh fzf --layout=reverse --multi --preview-window=right:60%:wrap \
+                 --preview='pacman --color always -Si {}'
 }
 
 # fzf command for "to be removed" packages
 fzfrp() {
-    fzfg --multi --preview-window=right:60%:wrap --preview='pacman --color always -Qi {}'
+    SHELL=sh fzf --layout=reverse --multi --preview-window=right:60%:wrap \
+                 --preview='pacman --color always -Qi {}'
 }
 
 # fzf command for "to be installed" groups
 fzfig() {
-    fzfg --multi --preview-window=right:60%:wrap --preview='
+    SHELL=bash fzf --layout=reverse --multi --preview-window=right:60%:wrap --preview='
         installed="$(pacman -Qqg {} 2>/dev/null)"
         pr -mt -s" " <(pacman -Sqg {} | grep -Fxvf <(echo "$installed")) <(echo "$installed") | awk '\''
             BEGIN {printf "%-24.24s  %.24s\n\n", "Not installed", "Installed";
@@ -42,12 +39,12 @@ fzfig() {
             /^ /  {printf fmt, "", $1; next}
             / $/  {printf fmt, $1, ""; next}
                   {printf fmt, $1, $2}
-        '\'
+    '\'
 }
 
 # fzf command for "to be removed" groups
 fzfrg() {
-    fzfg --multi --preview-window=right:60%:wrap --preview='
+    SHELL=bash fzf --layout=reverse --multi --preview-window=right:60%:wrap --preview='
         installed="$(pacman -Qqg {} 2>/dev/null)"
         pr -mt -s" " <(echo "$installed") <(pacman -Sqg {} | grep -Fxvf <(echo "$installed")) | awk '\''
             BEGIN {printf "%-24.24s  %.24s\n\n", "Installed", "Not installed";
@@ -55,7 +52,7 @@ fzfrg() {
             /^ /  {printf fmt, "", $1; next}
             / $/  {printf fmt, $1, ""; next}
                   {printf fmt, $1, $2}
-        '\'
+    '\'
 }
 
 
@@ -79,7 +76,7 @@ keyprompt() {
 
 while true ; do
     clear
-    case "$(echo -e "$menu" | fzfg)" in
+    case "$(echo -e "$menu" | fzf --layout=reverse)" in
         "$clr")
             trap : INT
             paccache -ruk0
