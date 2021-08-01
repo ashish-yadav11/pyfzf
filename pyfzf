@@ -74,6 +74,11 @@ keyprompt() {
     read -s -n1 -p $'\n Press any key to continue or ^C to exit...'
 }
 
+settitle() {
+    echo -en '\e]0;pyfzf\e\\'
+}
+
+settitle
 while true ; do
     clear
     case "$(echo -e "$menu" | fzf --layout=reverse)" in
@@ -210,6 +215,7 @@ while true ; do
             ;;
         "$sh")
             "$SHELL"
+            settitle
             ;;
         "$upg")
             trap : INT
