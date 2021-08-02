@@ -74,11 +74,9 @@ keyprompt() {
     read -s -n1 -p $'\n Press any key to continue or ^C to exit...'
 }
 
-settitle() {
-    echo -en '\e]0;pyfzf\e\\'
-}
+echo -en '\e[22t' # save title
+echo -en '\e]0;pyfzf\e\\' # set title
 
-settitle
 while true ; do
     clear
     case "$(echo -e "$menu" | fzf --layout=reverse)" in
@@ -209,13 +207,13 @@ while true ; do
                 yay -Rns "${orpstorem[@]}"
                 trap - INT
             else
-                echo -e "\e[1;32m==> \e[1;37mNo unneeded dependencies (orphans) found for removing\e[0m"
+                echo -e '\e[1;32m==> \e[1;37mNo unneeded dependencies (orphans) found for removing\e[0m'
             fi
             keyprompt
             ;;
         "$sh")
             "$SHELL"
-            settitle
+            echo -en '\e]0;pyfzf\e\\' # set title
             ;;
         "$upg")
             trap : INT
@@ -228,4 +226,6 @@ while true ; do
             ;;
     esac
 done
+
 clear
+echo -en '\e[23t' # restore title
