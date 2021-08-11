@@ -74,7 +74,7 @@ keyprompt() {
     read -s -n1 -p $'\n Press any key to continue or ^C to exit...'
 }
 
-echo -en '\e[22t' # save title
+echo -en '\e[22;0t' # save title
 echo -en '\e]0;pyfzf\e\\' # set title
 
 while true ; do
@@ -228,4 +228,4 @@ while true ; do
 done
 
 clear
-echo -en '\e[23t' # restore title
+echo -en '\e[23;0t' # restore title
