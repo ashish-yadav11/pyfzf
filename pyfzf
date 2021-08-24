@@ -131,7 +131,7 @@ while true ; do
             ;;
         "$rmig")
             mapfile -t grpstorem < <(
-                pacman -Qg | cut -d' ' | uniq |
+                pacman -Qg | cut -d' ' -f1 | uniq |
                  grep -Fxvf <(printf "%s\n" "${grpstoign[@]}") |
                   fzfrg)
             if (( ${#grpstorem[@]} )) ; then
