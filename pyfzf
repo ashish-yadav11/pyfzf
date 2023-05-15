@@ -57,17 +57,29 @@ fzfrg() {
 
 
 # grep extended regexp of packages to ignore when listing installed packages to remove
-pacstoign="^(base|efibootmgr|grub|linux|linux-firmware|linux-lts|man-db|man-pages)$"
+pacstoign="^(base|base-devel|efibootmgr|grub|linux|linux-firmware|linux-lts|man-db|man-pages)$"
 
 # list of package groups to ignore while listing installed packages to remove
-grpstoign=(base-devel)
+grpstoign=()
 
 # menu items to show
 menu="$insp\n$insg\n$upg\n$rmrp\n$rmro\n$rmra\n$rmip\n$rmio\n$rmia\n$rmig\n$pdif\n$clr\n$rmud\n$nws\n$sh"
 
 
-filter () {
-    grep -Fxvf <(pacman -Qqg "${grpstoign[@]}") | grep -Ev "$pacstoign"
+filterp() {
+    if (( ${#grpstoign[@]} )) ; then
+        grep -Fxvf <(pacman -Qqg "${grpstoign[@]}") | grep -Ev "$pacstoign"
+    else
+        grep -Ev "$pacstoign"
+    fi
+}
+
+filterg() {
+    if (( ${#grpstoign[@]} )) ; then
+        grep -Fxvf <(pacman -Qqg "${grpstoign[@]}")
+    else
+        cat
+    fi
 }
 
 keyprompt() {
@@ -131,9 +143,7 @@ while true ; do
             ;;
         "$rmig")
             mapfile -t grpstorem < <(
-                pacman -Qg | cut -d' ' -f1 | uniq |
-                 grep -Fxvf <(printf "%s\n" "${grpstoign[@]}") |
-                  fzfrg)
+                pacman -Qg | cut -d' ' -f1 | uniq | filterg | fzfrg)
             if (( ${#grpstorem[@]} )) ; then
                 clear
                 trap : INT
@@ -143,7 +153,7 @@ while true ; do
             fi
             ;;
         "$rmio")
-            mapfile -t pacstorem < <(pacman -Qqen | filter | fzfrp)
+            mapfile -t pacstorem < <(pacman -Qqen | filterp | fzfrp)
             if (( ${#pacstorem[@]} )) ; then
                 clear
                 trap : INT
@@ -153,7 +163,7 @@ while true ; do
             fi
             ;;
         "$rmip")
-            mapfile -t pacstorem < <(pacman -Qqe | filter | fzfrp)
+            mapfile -t pacstorem < <(pacman -Qqe | filterp | fzfrp)
             if (( ${#pacstorem[@]} )) ; then
                 clear
                 trap : INT
@@ -176,7 +186,7 @@ while true ; do
             mapfile -t pacstorem < <(
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '!x[$4] {x[$4]=1; print $4}' |
-                  grep -Fxf <(pacman -Qqen | filter) |
+                  grep -Fxf <(pacman -Qqen | filterp) |
                    fzfrp)
             if (( ${#pacstorem[@]} )) ; then
                 clear
@@ -190,7 +200,7 @@ while true ; do
             mapfile -t pacstorem < <(
                 tac /var/log/pacman.log | grep -aF "[ALPM] installed" |
                  awk '!x[$4] {x[$4]=1; print $4}' |
-                  grep -Fxf <(pacman -Qqe | filter) |
+                  grep -Fxf <(pacman -Qqe | filterp) |
                    fzfrp)
             if (( ${#pacstorem[@]} )) ; then
                 clear
