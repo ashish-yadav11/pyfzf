@@ -143,7 +143,7 @@ while true ; do
             ;;
         "$rmig")
             mapfile -t grpstorem < <(
-                pacman -Qg | cut -d' ' -f1 | uniq | filterg | fzfrg)
+                pacman -Qge | cut -d' ' -f1 | uniq | filterg | fzfrg)
             if (( ${#grpstorem[@]} )) ; then
                 clear
                 trap : INT
